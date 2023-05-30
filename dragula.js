@@ -32,6 +32,8 @@ function dragula (initialContainers, options) {
   if (o.invalid === void 0) { o.invalid = invalidTarget; }
   if (o.containers === void 0) { o.containers = initialContainers || []; }
   if (o.isContainer === void 0) { o.isContainer = never; }
+  if (o.proxyContainers === void 0) { o.proxyContainers = []; }
+  if (o.isProxyContainer === void 0) { o.isProxyContainer = never; }
   if (o.copy === void 0) { o.copy = false; }
   if (o.copySortSource === void 0) { o.copySortSource = false; }
   if (o.revertOnSpill === void 0) { o.revertOnSpill = false; }
@@ -39,10 +41,10 @@ function dragula (initialContainers, options) {
   if (o.direction === void 0) { o.direction = 'vertical'; }
   if (o.ignoreInputTextSelection === void 0) { o.ignoreInputTextSelection = true; }
   if (o.mirrorContainer === void 0) { o.mirrorContainer = doc.body; }
-  if (o.noShadow === void 0) { o.noShadow = false; }
 
   var drake = emitter({
     containers: o.containers,
+    proxyContainers: o.proxyContainers,
     start: manualStart,
     end: end,
     cancel: cancel,
@@ -62,6 +64,10 @@ function dragula (initialContainers, options) {
 
   function isContainer (el) {
     return drake.containers.indexOf(el) !== -1 || o.isContainer(el);
+  }
+
+  function isProxyContainer (el) {
+    return drake.proxyContainers.indexOf(el) !== -1 || o.isProxyContainer(el);
   }
 
   function events (remove) {
@@ -389,10 +395,6 @@ function dragula (initialContainers, options) {
       return;
     }
 
-    if (o.noShadow) {
-      return;
-    }
-
     var reference;
     var immediate = getImmediateChild(dropTarget, elementBehindCursor);
     if (immediate !== null) {
@@ -406,14 +408,28 @@ function dragula (initialContainers, options) {
       }
       return;
     }
+
+    
     if (
       (reference === null && changed) ||
       reference !== item &&
       reference !== nextEl(item)
     ) {
       _currentSibling = reference;
-      dropTarget.insertBefore(item, reference);
-      drake.emit('shadow', item, dropTarget, _source);
+      
+      if (isProxyContainer(dropTarget)) {
+          var dropZoneId = dropTarget.getAttribute('data-dropzone');
+          var actualDropTarget = document.getElementById(dropZoneId);
+          if(actualDropTarget)
+          {
+            actualDropTarget.appendChild(item);
+          }
+          drake.emit('shadow', item, actualDropTarget, _source);
+      }
+      else {
+          dropTarget.insertBefore(item, reference);
+          drake.emit('shadow', item, dropTarget, _source);
+      }
     }
     function moved (type) { drake.emit(type, item, _lastDropTarget, _source); }
     function over () { if (changed) { moved('over'); } }

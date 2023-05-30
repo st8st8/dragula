@@ -95,6 +95,9 @@ dragula(containers, {
   isContainer: function (el) {
     return false; // only elements in drake.containers will be taken into account
   },
+  isProxyContainer: function (el) {
+    return false; // elements hovering or dropped on proxy containers will nominate an actual drop zone to drop in.  Proxy containers must also be containers as well.
+  },
   moves: function (el, source, handle, sibling) {
     return true; // elements are always draggable by default
   },
@@ -113,7 +116,6 @@ dragula(containers, {
   ignoreInputTextSelection: true,     // allows users to select input text, see details below
   slideFactorX: 0,               // allows users to select the amount of movement on the X axis before it is considered a drag instead of a click
   slideFactorY: 0,               // allows users to select the amount of movement on the Y axis before it is considered a drag instead of a click
-  noShadow: false                    // no visual aid shadow is used
 });
 ```
 
@@ -157,6 +159,13 @@ var drake = dragula({
   }
 });
 ```
+#### `options.isProxyContainer`
+
+Sometimes you may want an element that acts as a drop zone for another container.  These are proxy containers.
+
+Proxy containers must be containers as well (in the containers list, or passing isContainers
+
+The proxy container must supply a 'data-name' attribute which is the id of the correct drop zone for this proxy
 
 #### `options.moves`
 
@@ -237,11 +246,6 @@ When this option is enabled, if the user clicks on an input element the drag won
 
 This option is enabled by default. Turn it off by setting it to `false`. If its disabled your users won't be able to select text in inputs within `dragula` containers with their mouse.
 
-#### `options.noShadow`
-
-When this option is enabled, no visual aid shadow is used, and the dragged element (the copy if `options.copy = true` or the original element otherwise) is **not automatically dropped** in the target. This is useful if you want to customize the element insertion in elements such `svg` or `canvas`.
-
-This option speeds things up because the DOM operations decrease significantly.
 
 ## API
 
