@@ -42,6 +42,12 @@ You can get it on npm.
 npm install dragula --save
 ```
 
+Or bower, too.
+
+```shell
+bower install dragula --save
+```
+
 Or a CDN.
 
 ```shell
@@ -107,6 +113,7 @@ dragula(containers, {
   ignoreInputTextSelection: true,     // allows users to select input text, see details below
   slideFactorX: 0,               // allows users to select the amount of movement on the X axis before it is considered a drag instead of a click
   slideFactorY: 0,               // allows users to select the amount of movement on the Y axis before it is considered a drag instead of a click
+  noShadow: false                    // no visual aid shadow is used
 });
 ```
 
@@ -230,6 +237,12 @@ When this option is enabled, if the user clicks on an input element the drag won
 
 This option is enabled by default. Turn it off by setting it to `false`. If its disabled your users won't be able to select text in inputs within `dragula` containers with their mouse.
 
+#### `options.noShadow`
+
+When this option is enabled, no visual aid shadow is used, and the dragged element (the copy if `options.copy = true` or the original element otherwise) is **not automatically dropped** in the target. This is useful if you want to customize the element insertion in elements such `svg` or `canvas`.
+
+This option speeds things up because the DOM operations decrease significantly.
+
 ## API
 
 The `dragula` method returns a tiny object with a concise API. We'll refer to the API returned by `dragula` as `drake`.
@@ -271,7 +284,7 @@ Event Name | Listener Arguments               | Event Description
 -----------|----------------------------------|-------------------------------------------------------------------------------------
 `drag`     | `el, source`                     | `el` was lifted from `source`
 `dragend`  | `el`                             | Dragging event for `el` ended with either `cancel`, `remove`, or `drop`
-`drop`     | `el, target, source, sibling`    | `el` was dropped into `target` before a `sibling` element, and originally came from `source`
+`drop`     | `el, target, source, sibling, event`    | `el` was dropped into `target` before a `sibling` element at position given by `event`, and originally came from `source`
 `cancel`   | `el, container, source`          | `el` was being dragged but it got nowhere and went back into `container`, its last stable parent; `el` originally came from `source`
 `remove`   | `el, container, source`          | `el` was being dragged but it got nowhere and it was removed from the DOM. Its last stable parent was `container`, and originally came from `source`
 `shadow`   | `el, container, source`          | `el`, _the visual aid shadow_, was moved into `container`. May trigger many times as the position of `el` changes, even within the same `container`; `el` originally came from `source`
@@ -321,7 +334,7 @@ MIT
 [7]: https://david-dm.org/bevacqua/dragula
 [8]: https://github.com/bevacqua/angularjs-dragula
 [9]: https://github.com/bevacqua/react-dragula
-[10]: http://bevacqua.github.io/angularjs-dragula/
+[10]: http://bevacqua.github.io/angular-dragula/
 [11]: http://bevacqua.github.io/react-dragula/
 [12]: https://github.com/bevacqua/dragula/blob/master/dist/dragula.css
 [13]: https://github.com/bevacqua/dragula/blob/master/dist/dragula.min.css
@@ -335,4 +348,3 @@ MIT
 [21]: https://github.com/bevacqua/dragula/issues/248
 [22]: https://github.com/valor-software/ng2-dragula
 [23]: http://valor-software.com/ng2-dragula/index.html
-[24]: https://dragula.slack.com
