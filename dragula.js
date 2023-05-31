@@ -251,6 +251,7 @@ function dragula (initialContainers, options) {
     var clientY = getCoord('clientY', e) || 0;
     var elementBehindCursor = getElementBehindPoint(_mirror, clientX, clientY);
     var dropTarget = findDropTarget(elementBehindCursor, clientX, clientY);
+    
     if (dropTarget && ((_copy && o.copySortSource) || (!_copy || dropTarget !== _source))) {
       drop(item, dropTarget, e);
     } else if (o.removeOnSpill) {
@@ -268,7 +269,11 @@ function dragula (initialContainers, options) {
     if (isInitialPlacement(target)) {
       drake.emit('cancel', item, _source, _source);
     } else {
-      drake.emit('drop', item, target, _source, _currentSibling, event);
+      var realTarget = target;
+      if( isProxyContainer(target) ) {
+         realTarget = getRealDropZoneFromProxy(target);
+      }
+      drake.emit('drop', item, realTarget, _source, _currentSibling, event);
     }
     cleanup();
   }
@@ -346,6 +351,7 @@ function dragula (initialContainers, options) {
     while (target && !accepted()) {
       target = getParent(target);
     }
+    
     return target;
 
     function accepted () {
@@ -418,8 +424,7 @@ function dragula (initialContainers, options) {
       _currentSibling = reference;
       
       if (isProxyContainer(dropTarget)) {
-          var dropZoneId = dropTarget.getAttribute('data-dropzone');
-          var actualDropTarget = document.getElementById(dropZoneId);
+          var actualDropTarget = getRealDropZoneFromProxy(dropTarget);
           if(actualDropTarget)
           {
             actualDropTarget.appendChild(item);
@@ -434,6 +439,12 @@ function dragula (initialContainers, options) {
     function moved (type) { drake.emit(type, item, _lastDropTarget, _source); }
     function over () { if (changed) { moved('over'); } }
     function out () { if (_lastDropTarget) { moved('out'); } }
+  }
+
+  function getRealDropZoneFromProxy(proxyDropTarget) {
+      var dropZoneId = proxyDropTarget.getAttribute('data-dropzone');
+      var actualDropTarget = document.getElementById(dropZoneId);
+      return actualDropTarget;
   }
 
   function spillOver (el) {
