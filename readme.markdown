@@ -140,6 +140,8 @@ And you could also not set any arguments, which defaults to a drake without cont
 var drake = dragula();
 ```
 
+You can use the 'data-max-items' attribute on containers to prevent them being dropped into until at least one element is removed
+
 The options are detailed below.
 
 #### `options.containers`

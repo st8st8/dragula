@@ -70,6 +70,20 @@ function dragula (initialContainers, options) {
     return drake.proxyContainers.indexOf(el) !== -1 || o.isProxyContainer(el);
   }
 
+  function isFull (container) {
+      var realContainer = container;
+      if( isProxyContainer(container) ) {
+        realContainer = getRealDropZoneFromProxy(container);
+      }
+      var ret = false;
+      var binCapacity = realContainer.getAttribute('data-max-items');
+      if( binCapacity && parseInt(binCapacity)) {
+            var nonTransits = realContainer.querySelectorAll(':not(.gu-transit)').length;
+          ret = nonTransits >= binCapacity;
+      }
+      return ret;
+  }
+
   function events (remove) {
     var op = remove ? 'remove' : 'add';
     touchy(documentElement, op, 'mousedown', grab);
@@ -355,7 +369,7 @@ function dragula (initialContainers, options) {
     return target;
 
     function accepted () {
-      var droppable = isContainer(target);
+      var droppable = isContainer(target) && !isFull(target);
       if (droppable === false) {
         return false;
       }
